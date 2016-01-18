@@ -4,4 +4,4 @@ jdk:
 - oraclejdk8
 
 script:
-- "./gradlew clean build distZip"
+- "./gradlew clean build test distZip"
