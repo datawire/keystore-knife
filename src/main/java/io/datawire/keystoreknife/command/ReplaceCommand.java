@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Datawire. All rights reserved.
+ * Copyright 2016 Datawire. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,15 +57,7 @@ public class ReplaceCommand extends Command {
     final String keyAlias = namespace.getString("alias");
     final String keyPassword = namespace.getString("password");
 
-//    byte[] newSecret = namespace.getString("new_secret").getBytes(StandardCharsets.UTF_8);
-
-    SecretKey currentKey = knife.getSecretKey(keyAlias, keyPassword);
     knife.replaceSecret(keyAlias, keyPassword, namespace.getString("new_secret"));
-
-//    SecretKey newKey = new SecretKeySpec(newSecret, currentKey.getAlgorithm());
-//    KeyStore.SecretKeyEntry newKeyEntry = new KeyStore.SecretKeyEntry(newKey);
-//
-//    knife.setSecretKey(namespace.getString("alias"), newKeyEntry, namespace.getString("password"));
 
     File outputFile = namespace.getString("out") == null ? namespace.get("keystore") : namespace.get("out");
     knife.save(outputFile, keyStorePassword);
