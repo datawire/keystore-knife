@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+if (!JavaVersion.current().java8Compatible) {
+  throw new IllegalArgumentException('''A Haiku:
+                                      |  This needs Java 8,
+                                      |  You are using something else,
+                                      |  Upgrade. Try again.'''.stripMargin())
+}
+
+mainClassName = 'io.datawire.keystoreknife.KeyStoreKnifeApplication'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+ext {
+  assertjVersion = '3.2.0'
+  datawireCommonsVersion = '0.0.4-SNAPSHOT'
+  guavaVersion = '19.0'
+
+  junitVersion = '4.12'
+}
+
+repositories {
+  jcenter()
+  maven {
+    url "https://oss.sonatype.org/content/repositories/snapshots"
+  }
+}
+
+dependencies {
+  compile "com.google.guava:guava:${guavaVersion}"
+  compile "io.datawire.commons:datawire-application:${datawireCommonsVersion}"
+
+  testCompile(
+      "io.datawire.commons:datawire-util:${datawireCommonsVersion}",
+      "junit:junit:${junitVersion}",
+      "org.assertj:assertj-core:${assertjVersion}",
+  )
+}
+
+applicationDistribution.from(projectDir) {
+  include 'README.md'
+  include 'dev.yml'
+  into ''
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.8'
+}
