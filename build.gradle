@@ -41,7 +41,8 @@ dependencies {
 
 applicationDistribution.from(projectDir) {
   include 'README.md'
-  include 'dev.yml'
+  include 'LICENSE'
+  include 'NOTICE'
   into ''
 }
 
