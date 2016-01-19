@@ -20,6 +20,7 @@ package io.datawire.keystoreknife;
 import io.datawire.app.Application;
 import io.datawire.app.ApplicationConfiguration;
 import io.datawire.app.Initializer;
+import io.datawire.keystoreknife.command.GenerateKeyCommand;
 import io.datawire.keystoreknife.command.ReplaceCommand;
 import io.datawire.keystoreknife.command.ShowCommand;
 
@@ -33,6 +34,7 @@ public class KeyStoreKnifeApplication extends Application<ApplicationConfigurati
   public void initialize(Initializer<ApplicationConfiguration> initializer) {
     initializer.addCommand(new ReplaceCommand());
     initializer.addCommand(new ShowCommand());
+    initializer.addCommand(new GenerateKeyCommand());
   }
 
   public static void main(String... args) {
