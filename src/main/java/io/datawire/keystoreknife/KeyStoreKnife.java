@@ -76,6 +76,7 @@ public class KeyStoreKnife {
         break;
       case "base32_hex":
         newSecretBytes = BaseEncoding.base32Hex().decode(newSecret);
+        break;
       case "base64":
         newSecretBytes = BaseEncoding.base64().decode(newSecret);
         break;
