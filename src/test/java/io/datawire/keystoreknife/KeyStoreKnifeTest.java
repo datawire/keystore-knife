@@ -17,6 +17,7 @@
 package io.datawire.keystoreknife;
 
 
+import com.google.common.io.BaseEncoding;
 import io.datawire.keystoreknife.exception.KeyStoreKnifeException;
 import io.datawire.util.test.Fixtures;
 import org.junit.Before;
@@ -102,12 +103,12 @@ public class KeyStoreKnifeTest {
   }
 
   @Test
-  public void replaceSecretKey_replacesSecretKey() throws Exception {
+  public void replaceSecretKey_WithPlain_replacesSecretKey() throws Exception {
     KeyStoreKnife knife = KeyStoreKnife.create(keyStoreFile, keyStoreType, keyStorePassword);
     SecretKey original = knife.getSecretKey(keyAlias, keyPassword);
 
     String newKeySecret = "applesauce";
-    knife.replaceSecret(keyAlias, keyPassword, newKeySecret);
+    knife.replaceSecret(keyAlias, keyPassword, newKeySecret, "plain");
 
     SecretKey modified = knife.getSecretKey(keyAlias, keyPassword);
     assertThat(modified.getAlgorithm()).isEqualTo(original.getAlgorithm());
@@ -116,11 +117,25 @@ public class KeyStoreKnifeTest {
   }
 
   @Test
+  public void replaceSecretKey_WithBase64Url_replacesSecretKey() throws Exception {
+    KeyStoreKnife knife = KeyStoreKnife.create(keyStoreFile, keyStoreType, keyStorePassword);
+    SecretKey original = knife.getSecretKey(keyAlias, keyPassword);
+
+    String newKeySecret = "VjXkMykA8npGE6xXki24b-yfsTGsVmkCLAADPKHgeQyuF01RS-ES5DOfi_OhA6pa";
+    knife.replaceSecret(keyAlias, keyPassword, newKeySecret, "base64_url");
+
+    SecretKey modified = knife.getSecretKey(keyAlias, keyPassword);
+    assertThat(modified.getAlgorithm()).isEqualTo(original.getAlgorithm());
+    assertThat(modified.getEncoded()).isNotEqualTo(original.getEncoded());
+    assertThat(BaseEncoding.base64Url().encode(modified.getEncoded())).isEqualTo(newKeySecret);
+  }
+
+  @Test
   public void saveKeyStore() throws IOException {
     KeyStoreKnife knife = KeyStoreKnife.create(keyStoreFile, keyStoreType, keyStorePassword);
 
     String newKeySecret = "applesauce";
-    knife.replaceSecret(keyAlias, keyPassword, newKeySecret);
+    knife.replaceSecret(keyAlias, keyPassword, newKeySecret, "plain");
 
     File temporaryKeyStoreFile = temporaryStorage.newFile();
 

@@ -17,6 +17,7 @@
 package io.datawire.keystoreknife;
 
 
+import com.google.common.io.BaseEncoding;
 import io.datawire.keystoreknife.exception.KeyStoreKnifeException;
 
 import javax.crypto.SecretKey;
@@ -59,13 +60,34 @@ public class KeyStoreKnife {
     }
   }
 
-  public void replaceSecret(String alias, String password, String newSecret) {
+  public void replaceSecret(String alias, String password, String newSecret, String encoding) {
     SecretKey key = getSecretKey(alias, password);
-    replaceSecret(key, alias, password, newSecret);
+    replaceSecret(key, alias, password, newSecret, encoding);
   }
 
-  public void replaceSecret(SecretKey currentKey, String alias, String password, String newSecret) {
-    byte[] newSecretBytes = newSecret.getBytes(StandardCharsets.UTF_8);
+  public void replaceSecret(SecretKey currentKey, String alias, String password, String newSecret, String encoding) {
+    byte[] newSecretBytes = new byte[0];
+    switch(encoding.toLowerCase()) {
+      case "base16":
+        newSecretBytes = BaseEncoding.base16().decode(newSecret);
+        break;
+      case "base32":
+        newSecretBytes = BaseEncoding.base32().decode(newSecret);
+        break;
+      case "base32_hex":
+        newSecretBytes = BaseEncoding.base32Hex().decode(newSecret);
+      case "base64":
+        newSecretBytes = BaseEncoding.base64().decode(newSecret);
+        break;
+      case "base64_url":
+        newSecretBytes = BaseEncoding.base64Url().decode(newSecret);
+        break;
+      case "plain":
+      default:
+        newSecretBytes = newSecret.getBytes(StandardCharsets.UTF_8);
+        break;
+    }
+
     SecretKey newKey = new SecretKeySpec(newSecretBytes, currentKey.getAlgorithm());
     KeyStore.SecretKeyEntry newKeyEntry = new KeyStore.SecretKeyEntry(newKey);
     setSecretKey(alias, newKeyEntry, password);

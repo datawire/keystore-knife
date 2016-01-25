@@ -39,7 +39,12 @@ public class ReplaceCommand extends Command {
         .help("the keystore to open and modify")
         .type(Arguments.fileType().verifyCanRead());
 
-    subparser.addArgument("--keystore-type").setDefault("JCEKS");
+    subparser.addArgument("--keystore-type").setDefault("JCEKS").help("the java keystore type");
+    subparser.addArgument("--encoding")
+        .setDefault("plain")
+        .choices("plain", "base16", "base32", "base32_hex", "base64", "base64_url")
+        .help("The encoding of the replacement secret");
+
     subparser.addArgument("--out");
 
     subparser.addArgument("keystore_password").help("the keystore password");
@@ -50,14 +55,17 @@ public class ReplaceCommand extends Command {
 
   @Override
   public void run(Initializer<?> initializer, Namespace namespace) throws Exception {
-    KeyStoreKnife knife = KeyStoreKnife.create(
-        namespace.get("keystore"), namespace.getString("keystore_type"), namespace.getString("keystore_password"));
-
     final String keyStorePassword = namespace.getString("keystore_password");
+
+    KeyStoreKnife knife = KeyStoreKnife.create(
+        namespace.get("keystore"), namespace.getString("keystore_type"), keyStorePassword);
+
     final String keyAlias = namespace.getString("alias");
     final String keyPassword = namespace.getString("password");
 
-    knife.replaceSecret(keyAlias, keyPassword, namespace.getString("new_secret"));
+    knife.replaceSecret(keyAlias, keyPassword,
+        namespace.getString("new_secret"),
+        namespace.getString("encoding"));
 
     File outputFile = namespace.getString("out") == null ? namespace.get("keystore") : namespace.get("out");
     knife.save(outputFile, keyStorePassword);
